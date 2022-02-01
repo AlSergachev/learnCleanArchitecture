@@ -1,14 +1,12 @@
 package com.example.learncleanarchitecture.domain.usecase
 
-import com.example.learncleanarchitecture.domain.models.SaveUserNameParam
+import com.example.learncleanarchitecture.domain.models.UserName
+import com.example.learncleanarchitecture.domain.repository.UserRepository
 
-class SaveUserNameUseCase {
+class SaveUserNameUseCase(private val userRepository: UserRepository) {
 
-    fun execute(param: SaveUserNameParam): Boolean{
-        if(param.name.isEmpty()){
-            return false
-        }
-        else
-            return true
+    fun execute(userName: UserName): Boolean{
+        val result: Boolean = userRepository.saveName(userName = userName)
+        return result
     }
 }

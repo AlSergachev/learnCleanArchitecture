@@ -1,10 +1,11 @@
 package com.example.learncleanarchitecture.domain.usecase
 
 import com.example.learncleanarchitecture.domain.models.UserName
+import com.example.learncleanarchitecture.domain.repository.UserRepository
 
-class GetUserNameUseCase {
+class GetUserNameUseCase(private val userRepository: UserRepository){
 
     fun execute(): UserName {
-        return UserName(firstName = "Alex", lastName = "Miller")
+        return userRepository.getName()
     }
 }
