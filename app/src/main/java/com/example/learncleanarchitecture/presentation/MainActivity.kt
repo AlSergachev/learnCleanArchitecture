@@ -8,8 +8,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.learncleanarchitecture.R
+import com.example.learncleanarchitecture.app.App
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var vmFactory: MainViewModelFactory
 
     private lateinit var viewModel: MainViewModel
 
@@ -17,10 +22,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        (applicationContext as App).appComponent.inject(this)
+
         Log.e("AAA", "Activity created")
 
-        viewModel = ViewModelProvider(this, MainViewModelFactory(this)).
-        get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this, vmFactory).get(MainViewModel::class.java)
 
         val dataTextView = findViewById<TextView>(R.id.dataTextView)
         val putFirstName = findViewById<EditText>(R.id.putFirstName)
@@ -28,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         val sendButton = findViewById<Button>(R.id.sendButton)
         val receiveButton = findViewById<Button>(R.id.receiveButton)
 
-        viewModel.resultLife.observe(this, {text ->
+        viewModel.resultLife.observe(this, { text ->
             dataTextView.text = text
         })
 
