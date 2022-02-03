@@ -1,17 +1,16 @@
 package com.example.learncleanarchitecture.presentation
 
 import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.example.learncleanarchitecture.R
 import com.example.learncleanarchitecture.data.repository.UserRepositoryImpl
+import com.example.learncleanarchitecture.data.storage.SharedPrefUserStorage
 import com.example.learncleanarchitecture.domain.models.UserName
 import com.example.learncleanarchitecture.domain.usecase.GetUserNameUseCase
 import com.example.learncleanarchitecture.domain.usecase.SaveUserNameUseCase
-
 
 
 class MainActivity : Activity() {
@@ -19,7 +18,9 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val userRepository by lazy { UserRepositoryImpl(context = applicationContext) }
+        val userRepository by lazy {
+            UserRepositoryImpl(userStorage = SharedPrefUserStorage(context = applicationContext))
+        }
         val getUserNameUseCase by lazy { GetUserNameUseCase(userRepository) }
         val saveUserNameUseCase by lazy { SaveUserNameUseCase(userRepository) }
 
@@ -29,7 +30,7 @@ class MainActivity : Activity() {
         val sendButton = findViewById<Button>(R.id.sendButton)
         val receiveButton = findViewById<Button>(R.id.receiveButton)
 
-        sendButton.setOnClickListener{
+        sendButton.setOnClickListener {
             val firstName = putFirstName.text.toString()
             val lastName = putLastName.text.toString()
             val fullName = UserName(firstName = firstName, lastName = lastName)
