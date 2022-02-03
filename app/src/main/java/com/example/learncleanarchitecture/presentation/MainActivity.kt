@@ -1,28 +1,26 @@
 package com.example.learncleanarchitecture.presentation
 
-import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.learncleanarchitecture.R
-import com.example.learncleanarchitecture.data.repository.UserRepositoryImpl
-import com.example.learncleanarchitecture.data.storage.SharedPrefUserStorage
-import com.example.learncleanarchitecture.domain.models.UserName
-import com.example.learncleanarchitecture.domain.usecase.GetUserNameUseCase
-import com.example.learncleanarchitecture.domain.usecase.SaveUserNameUseCase
 
+class MainActivity : AppCompatActivity() {
 
-class MainActivity : Activity() {
+    private lateinit var viewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val userRepository by lazy {
-            UserRepositoryImpl(userStorage = SharedPrefUserStorage(context = applicationContext))
-        }
-        val getUserNameUseCase by lazy { GetUserNameUseCase(userRepository) }
-        val saveUserNameUseCase by lazy { SaveUserNameUseCase(userRepository) }
+        Log.e("AAA", "Activity created")
+
+        viewModel = ViewModelProvider(this, MainViewModelFactory(this)).
+        get(MainViewModel::class.java)
 
         val dataTextView = findViewById<TextView>(R.id.dataTextView)
         val putFirstName = findViewById<EditText>(R.id.putFirstName)
@@ -30,17 +28,18 @@ class MainActivity : Activity() {
         val sendButton = findViewById<Button>(R.id.sendButton)
         val receiveButton = findViewById<Button>(R.id.receiveButton)
 
+        viewModel.resultLife.observe(this, {text ->
+            dataTextView.text = text
+        })
+
         sendButton.setOnClickListener {
             val firstName = putFirstName.text.toString()
             val lastName = putLastName.text.toString()
-            val fullName = UserName(firstName = firstName, lastName = lastName)
-            val result: Boolean = saveUserNameUseCase.execute(fullName)
-            dataTextView.text = "Save result = $result"
+            viewModel.save(firstName, lastName)
         }
 
         receiveButton.setOnClickListener {
-            val userName = getUserNameUseCase.execute()
-            dataTextView.text = "${userName.firstName} ${userName.lastName}"
+            viewModel.load()
         }
     }
 }

@@ -5,8 +5,12 @@ import com.example.learncleanarchitecture.domain.repository.UserRepository
 
 class SaveUserNameUseCase(private val userRepository: UserRepository) {
 
-    fun execute(userName: UserName): Boolean{
-        val result: Boolean = userRepository.saveName(userName = userName)
-        return result
+    fun execute(userName: UserName): Boolean {
+
+        if (userName.firstName == userRepository.getName().firstName) {
+            return true
+        }
+
+        return userRepository.saveName(userName = userName)
     }
 }
